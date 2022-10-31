@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Photo Search</string>
+    <string name="label_trending">Trending Now On Flickr</string>
+    <string name="label_recent">Recently Uploaded</string>
+    <string name="label_home">Home</string>
+    <string name="label_search">Search</string>
+    <string name="label_the_commons">The Commons</string>
+    <string name="label_events">Events</string>
+    <string name="label_gallery">Gallery</string>
+    <string name="label_space">Blank space</string>
+    <string name="label_delete">Delete</string>
+    <string name="label_logo">Logo</string>
+    <string name="label_most_searched">The Most Searched Photos</string>
+</resources>

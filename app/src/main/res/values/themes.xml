@@ -1,0 +1,6 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="AppTheme" parent="@style/Theme.Leanback" />
+    <style name="AppTheme.Splash" parent="@style/Theme.Leanback">
+        <item name="android:windowBackground">@drawable/splash_screen</item>
+    </style>
+</resources>
