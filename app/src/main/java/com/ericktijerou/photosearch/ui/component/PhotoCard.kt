@@ -15,6 +15,7 @@
  */
 package com.ericktijerou.photosearch.ui.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
@@ -41,7 +42,8 @@ import com.ericktijerou.photosearch.ui.util.verticalGradientScrim
 fun PhotoCard(
     focused: Boolean,
     photo: PhotoModelView,
-    onFocusedFirstTime: () -> Unit
+    onFocusedFirstTime: () -> Unit,
+    onPhotoClick: (PhotoModelView) -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(focused) {
@@ -69,8 +71,11 @@ fun PhotoCard(
                 .focusRequester(focusRequester)
                 .dpadFocusable(
                     unfocusedBorderColor = MaterialTheme.colorScheme.background,
-                    onFocus = { }
+                    onFocus = { },
                 )
+                .clickable {
+                    onPhotoClick(photo)
+                }
         ) {
             Box {
                 AsyncImage(

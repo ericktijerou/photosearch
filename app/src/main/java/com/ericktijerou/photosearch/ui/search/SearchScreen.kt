@@ -35,10 +35,11 @@ import com.ericktijerou.photosearch.ui.component.LoadingItem
 import com.ericktijerou.photosearch.ui.component.LoadingView
 import com.ericktijerou.photosearch.ui.component.PhotoCard
 import com.ericktijerou.photosearch.ui.component.SearchKeyboard
+import com.ericktijerou.photosearch.ui.home.PhotoModelView
 import com.ericktijerou.photosearch.ui.util.itemsIndexed
 
 @Composable
-fun SearchScreen(viewModel: SearchViewModel) {
+fun SearchScreen(viewModel: SearchViewModel, onPhotoClick: (PhotoModelView) -> Unit) {
     var text by remember { mutableStateOf("") }
     viewModel.search(text)
     Row(
@@ -68,7 +69,8 @@ fun SearchScreen(viewModel: SearchViewModel) {
             }
             ResultListGrid(
                 viewModel = viewModel,
-                contentPadding = PaddingValues(horizontal = 0.dp)
+                contentPadding = PaddingValues(horizontal = 0.dp),
+                onPhotoClick = onPhotoClick
             )
         }
     }
@@ -78,7 +80,8 @@ fun SearchScreen(viewModel: SearchViewModel) {
 @Composable
 fun ResultListGrid(
     viewModel: SearchViewModel,
-    contentPadding: PaddingValues
+    contentPadding: PaddingValues,
+    onPhotoClick: (PhotoModelView) -> Unit
 ) {
     val lazyItems = viewModel.searchResult.collectAsLazyPagingItems()
     Column {
@@ -94,7 +97,8 @@ fun ResultListGrid(
                     PhotoCard(
                         photo = it,
                         focused = false,
-                        onFocusedFirstTime = { }
+                        onFocusedFirstTime = { },
+                        onPhotoClick = onPhotoClick
                     )
                 }
             }

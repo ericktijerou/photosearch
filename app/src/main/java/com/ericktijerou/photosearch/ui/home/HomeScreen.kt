@@ -34,13 +34,13 @@ import com.ericktijerou.photosearch.ui.util.defaultSectionList
 import com.ericktijerou.photosearch.ui.util.itemsIndexed
 
 @Composable
-fun HomeScreen(viewModel: HomeViewModel) {
+fun HomeScreen(viewModel: HomeViewModel, onPhotoClick: (PhotoModelView) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(top = 20.dp)
     ) {
-        SectionList(viewModel, defaultSectionList)
+        SectionList(viewModel, defaultSectionList, onPhotoClick = onPhotoClick)
     }
 }
 
@@ -48,6 +48,7 @@ fun HomeScreen(viewModel: HomeViewModel) {
 fun SectionList(
     homeViewModel: HomeViewModel,
     list: List<PhotoSection>,
+    onPhotoClick: (PhotoModelView) -> Unit
 ) {
     TvLazyColumn(
         contentPadding = PaddingValues(vertical = 27.dp),
@@ -60,6 +61,7 @@ fun SectionList(
                 homeViewModel = homeViewModel,
                 photoSection = section,
                 contentPadding = PaddingValues(horizontal = 16.dp),
+                onPhotoClick = onPhotoClick
             )
         }
     }
@@ -70,6 +72,7 @@ fun CardRow(
     homeViewModel: HomeViewModel,
     photoSection: PhotoSection,
     contentPadding: PaddingValues,
+    onPhotoClick: (PhotoModelView) -> Unit
 ) {
     val lazyItems = homeViewModel.getListBySection(photoSection.type).collectAsLazyPagingItems()
     Column {
@@ -91,7 +94,8 @@ fun CardRow(
                     PhotoCard(
                         photo = it,
                         focused = index == 0 && homeViewModel.isFirstTime,
-                        onFocusedFirstTime = { homeViewModel.isFirstTime = false }
+                        onFocusedFirstTime = { homeViewModel.isFirstTime = false },
+                        onPhotoClick = onPhotoClick
                     )
                 }
             }

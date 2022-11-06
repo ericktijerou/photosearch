@@ -21,105 +21,56 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
-import androidx.navigation.compose.currentBackStackEntryAsState
-import com.ericktijerou.photosearch.R
-import com.ericktijerou.photosearch.ui.component.MenuDrawer
-import com.ericktijerou.photosearch.ui.home.HomeScreen
-import com.ericktijerou.photosearch.ui.search.SearchScreen
-import com.ericktijerou.photosearch.ui.util.Tab
-import com.ericktijerou.photosearch.ui.util.navigateSingleTopTo
+import com.ericktijerou.photosearch.ui.home.PhotoModelView
+import com.ericktijerou.photosearch.ui.main.MainScreen
+import com.ericktijerou.photosearch.ui.main.Screen
+import com.ericktijerou.photosearch.ui.photo.PhotoScreen
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.google.gson.Gson
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AppNavigation() {
-    val tabs = listOf(Tab.Search, Tab.Home, Tab.Gallery, Tab.Events, Tab.TheCommons)
     val navController = rememberAnimatedNavController()
-    val currentBackStack by navController.currentBackStackEntryAsState()
-    val currentDestination = currentBackStack?.destination
-    val currentTab = tabs.find { it.route == currentDestination?.route } ?: Tab.Home
-
-    ConstraintLayout(Modifier.fillMaxSize()) {
-        val (logo) = createRefs()
-        Icon(
-            painter = painterResource(id = R.drawable.ic_logo),
-            contentDescription = stringResource(id = R.string.label_logo),
-            modifier = Modifier.constrainAs(logo) {
-                end.linkTo(parent.end, margin = 28.dp)
-                top.linkTo(parent.top, margin = 28.dp)
+    AnimatedNavHost(
+        navController = navController,
+        startDestination = Screen.MainScreen.route,
+    ) {
+        composable(
+            route = Screen.MainScreen.route,
+            enterTransition = { tabEnterTransition() },
+            exitTransition = { tabExitTransition() }
+        ) {
+            MainScreen {
+                navController.navigate(Screen.DetailScreen.route(it))
             }
-        )
-        Row(modifier = Modifier.fillMaxSize()) {
-            MenuDrawer(
-                modifier = Modifier.padding(top = 34.dp),
-                selectedTab = currentTab,
-                tabs = tabs,
-                onTabSelected = { navController.navigateSingleTopTo(it.route) }
-            )
+        }
 
-            AnimatedNavHost(
-                navController = navController,
-                startDestination = Tab.Home.route,
-            ) {
-                composable(
-                    route = Tab.Home.route,
-                    enterTransition = {
-                        tabEnterTransition(AnimatedContentScope.SlideDirection.Start)
-                    },
-                    exitTransition = {
-                        tabExitTransition(AnimatedContentScope.SlideDirection.End)
-                    }
-                ) {
-                    HomeScreen(viewModel = hiltViewModel())
-                }
+        composable(route = Screen.DetailScreen.route,
+            enterTransition = { tabEnterTransition() },
+            exitTransition = { tabExitTransition() }
+        ) {
+            val modelString = it.arguments?.getString(Screen.DetailScreen.ARG_PHOTO)
+            val model = Gson().fromJson(modelString, PhotoModelView::class.java)
+            PhotoScreen(model = model, modifier = Modifier.fillMaxSize())
 
-                composable(route = Tab.Search.route,
-                    enterTransition = {
-                        tabEnterTransition(AnimatedContentScope.SlideDirection.Start)
-                    },
-                    exitTransition = {
-                        tabExitTransition(AnimatedContentScope.SlideDirection.End)
-                    }
-                ) {
-                    SearchScreen(viewModel = hiltViewModel())
-                }
-            }
         }
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
 private fun AnimatedContentScope<NavBackStackEntry>.tabExitTransition(
-    slideDirection: AnimatedContentScope.SlideDirection,
     duration: Int = 500
-) = fadeOut(tween(duration / 2, easing = LinearEasing)) + slideOutOfContainer(
-    slideDirection,
-    tween(duration, easing = LinearEasing),
-    targetOffset = { it / 24 }
-)
+) = fadeOut(tween(duration / 2, easing = LinearEasing))
 
 @OptIn(ExperimentalAnimationApi::class)
 private fun AnimatedContentScope<NavBackStackEntry>.tabEnterTransition(
-    slideDirection: AnimatedContentScope.SlideDirection,
     duration: Int = 500,
     delay: Int = duration - 350
-) = fadeIn(tween(duration, duration - delay)) + slideIntoContainer(
-    slideDirection,
-    animationSpec = tween(duration, duration - delay),
-    initialOffset = { it / 24 }
-)
+) = fadeIn(tween(duration, duration - delay))
